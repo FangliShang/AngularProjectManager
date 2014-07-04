@@ -1,0 +1,184 @@
+<div class="wrapper">
+
+    <div class="box">
+    
+    	<div class="row row-offcanvas row-offcanvas-left">
+
+    		<div class="column col-sm-1 col-xs-1 col-md-2 sidebar-offcanvas" id="sidebar">
+    			<ul class="nav">
+          			<li><a data-toggle="offcanvas" class="visible-xs visible-sm text-center"><i class="glyphicon glyphicon-chevron-right"></i></a></li>
+            	</ul>
+    			<ul class="nav hidden-xs hidden-sm" id="lg-menu">
+    				<li ng-click="goto('section1')"><a><i class="glyphicon glyphicon-list-alt"></i>Projects</a></li>
+    				<li ng-click="goto('section2')"><a ><i class="glyphicon glyphicon-list"></i>To Do</a></li>
+    				<li ng-click="goto('section3')"><a ><i class="glyphicon glyphicon-paperclip"></i>In Progress</a></li>
+    				<li ng-click="goto('section4')"><a ><i class="glyphicon glyphicon-refresh"></i>Done</a></li>
+    			</ul>
+    			<ul class="list-unstyled hidden-xs hidden-sm" id="sidebar-footer">
+                    <li>
+                      <a href="#"><h3>Project Manager</h3> <i class="glyphicon glyphicon-heart-empty"></i> Project Manager</a>
+                    </li>
+                </ul>
+
+                <ul class="nav visible-xs visible-sm" id="xs-menu">
+                	<li ng-click="goto('section1')"><a class="text-center"><i class="glyphicon glyphicon-list-alt"></i></a></li>
+    				<li ng-click="goto('section2')"><a class="text-center"><i class="glyphicon glyphicon-list"></i></a></li>
+    				<li ng-click="goto('section3')"><a class="text-center"><i class="glyphicon glyphicon-paperclip"></i></a></li>
+    				<li ng-click="goto('section4')"><a class="text-center"><i   class="glyphicon glyphicon-refresh"></i></a></li>
+                </ul>
+    		</div>
+
+
+    		<div class="column col-sm-11 col-xs-11 col-md-10" id="main">	
+    			<div id="mainrow">
+				<div class="row">
+
+					<div class="col-sm-10 col-md-3">
+
+						<div class="panel panel-success" id="section1">
+						    <div class="panel-heading">
+						        <h3 class="panel-title">All projects</h3>
+						    </div>
+						    <div class="panel-body">Here you can view all the projects and also create new projects</div>
+						    <div class="panel-footer clearfix">
+						        <div class="pull-right" ng-show="signedIn()">
+						            <a class="btn btn-primary"  ng-click="create=true">New project</a>
+						        </div>
+						        <p ng-hide="signedIn()"><a href="#/login">Sign in</a> to create new project</p>
+						    </div>
+						</div>
+
+
+						<div class="panel panel-success" ng-show="create">
+						    <div class="panel-heading">
+						        <h3 class="panel-title">Create a project</h3>
+						    </div>
+						    <div class="panel-body">
+
+						    	<form ng-submit="submitProject()">
+						    		<input type="text" class="form-control" id="inputProjectName" placeholder="Project name" ng-model="project.name"><br>
+						    		<textarea ng-model="project.description" placeholder="Description of project" class="form-control">
+						    		</textarea><br>
+
+							    	<div class="form-group">					    	
+							    		<label for="inputStartDate">Start Date</label>
+							    		<input type="date" class="form-control" id="inputStartDate" ng-model="project.startDate">
+							    	</div>
+
+							    	<div class="form-group">
+							    		<label for="inputStartDate">End Date</label>
+							    		<input type="date" class="form-control" id="inputEndDate" ng-model="project.endDate">
+							    	</div>
+							    	<button type="submit" class="btn btn-primary">Submit</button>
+						    	</form>
+
+						    </div>
+
+						    <div class="panel-footer clearfix">
+						        <div class="pull-right">
+						            <a class="btn btn-primary" ng-click="create=false">Close</a>
+						        </div>
+						    </div>
+						</div>
+					</div>
+					
+
+
+					<div class="col-sm-4 col-md-3">
+						<div class="panel panel-info" id="section2">
+						    <div class="panel-heading">
+						    	<ul class="list-inline">
+						    		<li>
+						    			<span class="glyphicon glyphicon-folder-close"></span>
+						    		</li>				    	
+							    	<li>
+							        	<h3 class="panel-title">  To do</h3>
+							    	</li>
+							    	<span ng-click="show('hidedToDo')" ng-show="hidedToDo" class="vote up pull-right">▼</span>
+							    	<span ng-click="hide('hidedToDo')" ng-hide="hidedToDo" class="vote down pull-right">▲</span>
+						    	</ul>
+						     
+						    </div>
+						    <div class="panel-body" ng-drop="true" ng-drop-success="onDropComplete1($data,$event,'todo')" ng-hide="hidedToDo">
+						    	<div ng-repeat="(projectId, project) in projects" ng-drag="true" ng-drag-data="projectId" ng-drag-success="onDragSuccess1($data,$event)">
+						    		<div  class="panel panel-warning" ng-show="project.state=='todo'">
+						    			<div class="panel-body">
+						    				<a href="#/projects/{{projectId}}" ng-drag="false">
+						    					{{project.name}}
+						    				</a>
+						    				<span ng-show="currentUser.username==project.owner" ng-click="removeProject(projectId)" class="vote up pull-right" ng-drag="false">✖</span>
+						    			</div>
+						    		</div>
+						    	</div>
+						    </div>
+						    
+						</div>
+					</div>
+
+					<div class="col-sm-4 col-md-3">
+						<div class="panel panel-info" id="section3">
+						    <div class="panel-heading">
+						    	<ul class="list-inline">
+						    		<li>
+						    			<span class="glyphicon glyphicon-folder-close"></span>
+						    		</li>				    	
+							    	<li>
+							        	<h3 class="panel-title">In Progress</h3>
+							    	</li>
+							    	<span ng-click="show('hidedInProgress')" ng-show="hidedInProgress" class="vote up pull-right">▼</span>
+							    	<span ng-click="hide('hidedInProgress')" ng-hide="hidedInProgress" class="vote down pull-right">▲</span>
+						    	</ul>
+						    </div>
+						    <div class="panel-body" ng-drop="true" ng-drop-success="onDropComplete1($data,$event,'inprogress')" ng-hide="hidedInProgress">		
+						    	<div ng-repeat="(projectId, project) in projects" ng-drag="true" ng-drag-data="projectId" ng-drag-success="onDragSuccess1($data,$event)">
+						    		<div class="panel panel-warning" ng-show="project.state=='inprogress'" >
+						    			<div class="panel-body">
+						    				<a href="#/projects/{{projectId}}" ng-drag="false">
+							    				{{project.name}}
+							    			</a>
+							    			<span ng-show="currentUser.username==project.owner" ng-click="removeProject(projectId)" class="vote up pull-right" ng-drag="false">✖</span>
+						    			</div>
+						    		</div>
+						    	</div>
+						    </div>
+						 
+						</div>
+					</div>
+
+					<div class="col-sm-4 col-md-3">
+						<div class="panel panel-info" id="section4">
+						    <div class="panel-heading">
+						    	<ul class="list-inline">
+						    		<li>
+						    			<span class="glyphicon glyphicon-folder-close"></span>
+						    		</li>				    	
+							    	<li>
+							        	<h3 class="panel-title">Done</h3>
+							    	</li>
+							    	<span ng-click="show('hidedDone')" ng-show="hidedDone" class="vote up pull-right">▼</span>
+							    	<span ng-click="hide('hidedDone')" ng-hide="hidedDone" class="vote down pull-right">▲</span>
+						    	</ul>
+						    </div>
+						    <div class="panel-body" ng-drop="true" ng-drop-success="onDropComplete1($data,$event,'done')" ng-hide="hidedDone">
+						    	<div ng-repeat="(projectId, project) in projects" ng-drag="true" ng-drag-data="projectId" ng-drag-success="onDragSuccess1($data,$event)">
+						    		<div class="panel panel-warning" ng-show="project.state=='done'">
+						    			<div class="panel-body">
+						    				<a href="#/projects/{{projectId}}" ng-drag="false">
+							    				{{project.name}}
+							    			</a>
+							    			<span ng-show="currentUser.username==project.owner" ng-click="removeProject(projectId)" class="vote up pull-right" ng-drag="false">✖</span>
+						    			</div>
+						    		</div>
+						    	</div>
+						    </div>			
+						</div>
+					</div>
+
+				</div>
+
+			</div>
+			</div>
+		</div>
+	</div>
+
+</div>
